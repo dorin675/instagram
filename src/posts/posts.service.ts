@@ -94,12 +94,15 @@ export class PostsService {
     if (!post) {
       throw new ConflictException('Post does not exist');
     }
+
+    console.log(`prev`, post.usersThatLikedPost);
     // post.usersThatLikedPost = [...new Set(post.usersThatLikedPost)];
-    if (!post.usersThatLikedPost.includes(user)) {
+    if (post.usersThatLikedPost.findIndex((e) => e.id === user.id) === -1) {
+      console.log('tes`');
       post.usersThatLikedPost.push(user);
       user.likedPosts.push(post);
     }
-    console.log(post.usersThatLikedPost);
+    console.log('NEX', post.usersThatLikedPost);
     await this.postRepo.save(post);
     await this.userRepo.save(user);
     return post.usersThatLikedPost.length;
@@ -118,14 +121,16 @@ export class PostsService {
     if (!post) {
       throw new ConflictException('Post does not exist');
     }
-    console.log(post.usersThatLikedPost);
+    console.log('prev', post.usersThatLikedPost);
     // post.usersThatLikedPost = [...new Set(post.usersThatLikedPost)];
-    if (post.usersThatLikedPost.includes(user)) {
+    if (post.usersThatLikedPost.map((x) => x.id).includes(user.id)) {
       const index = post.usersThatLikedPost.indexOf(user);
       post.usersThatLikedPost.splice(index, 1);
+      console.log('in process', post.usersThatLikedPost);
     }
-    console.log(post.usersThatLikedPost);
+    console.log('after', post.usersThatLikedPost);
     await this.postRepo.save(post);
+    await this.userRepo.save(user);
     return post.usersThatLikedPost.length;
   }
 }
