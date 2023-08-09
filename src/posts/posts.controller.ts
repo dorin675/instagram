@@ -55,4 +55,8 @@ export class PostsController {
   ) {
     return await this.postsService.unlikePost(userId, id);
   }
+  @Get('/feed/:userId')
+  async feed(@Param('userId', ParseIntPipe) userId: number) {
+    return await this.postsService.feed(userId);
+  }
 }

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -137,7 +138,85 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    await this.userRepo.delete(user);
+    await this.userRepo.delete(user.id);
     return user;
+  }
+
+  // private async _getStructuredUser(id: number) {
+  //   const user = await this.userRepo.findOne({ where: { id } });
+  //   if (!user) {
+  //     throw new NotFoundException('User not found');
+  //   }
+  //   const structuredUser: UserTransferDto = { ...user };
+  //   console.log(structuredUser);
+  //   return structuredUser;
+  // }
+
+  async followUser(id: number, userToFollowId: number) {
+    if (id === userToFollowId) {
+      throw new BadRequestException('You can not follow you');
+    }
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: { following: true },
+    });
+    const user1 = await this.userRepo.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const userToFollow = await this.userRepo.findOne({
+      where: { id: userToFollowId },
+      relations: ['followers'],
+    });
+    const user2 = await this.userRepo.findOne({
+      where: { id: userToFollowId },
+    });
+    if (!userToFollow) {
+      throw new NotFoundException('User to follow not found');
+    }
+    console.log(user.following);
+    if (!user.following.map((x) => x.id).includes(userToFollowId)) {
+      user.following.push(user2);
+      userToFollow.followers.push(user1);
+    }
+    // console.log(user.following);
+    // console.log(user, userToFollow);
+    await this.userRepo.save(user);
+    await this.userRepo.save(userToFollow);
+
+    return user.following;
+  }
+  async unfollowUser(id: number, userToFollowId: number) {
+    if (id === userToFollowId) {
+      throw new BadRequestException('You can not follow you');
+    }
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: { following: true },
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const userToFollow = await this.userRepo.findOne({
+      where: { id: userToFollowId },
+      relations: ['followers'],
+    });
+
+    if (!userToFollow) {
+      throw new NotFoundException('User to follow not found');
+    }
+    console.log(user.following);
+    if (user.following.map((x) => x.id).includes(userToFollowId)) {
+      const index1 = user.following.map((x) => x.id).indexOf(userToFollow.id);
+      user.following.splice(index1, 1);
+      const index2 = userToFollow.followers.map((x) => x.id).indexOf(user.id);
+      userToFollow.followers.splice(index2, 1);
+    }
+    // console.log(user.following);
+    // console.log(user, userToFollow);
+    await this.userRepo.save(user);
+    await this.userRepo.save(userToFollow);
+
+    return user.following;
   }
 }

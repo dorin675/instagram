@@ -51,4 +51,21 @@ export class User {
   @ManyToMany(() => Comment, (comment) => comment.userThatLiked)
   @JoinTable()
   likedComments: Comment[];
+
+  @ManyToMany(() => User, (user) => user.followers, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'user_follows',
+    joinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+    inverseJoinColumn: { name: 'following_id', referencedColumnName: 'id' },
+  })
+  following: User[];
+
+  @ManyToMany(() => User, (user) => user.following, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  followers: User[];
 }

@@ -25,4 +25,5 @@ export class Post {
 
   @ManyToMany(() => User, (user) => user.likedPosts, { onDelete: 'CASCADE' })
   usersThatLikedPost: User[];
+
 }

@@ -49,4 +49,18 @@ export class UsersController {
   async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return await this.usersService.deleteUser(id);
   }
+  @Post('/:id/:userToFollowId/follow')
+  async followUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userToFollowId', ParseIntPipe) userToFollowId: number,
+  ) {
+    return await this.usersService.followUser(id, userToFollowId);
+  }
+  @Post('/:id/:userToFollowId/unfollow')
+  async unfollowUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('userToFollowId', ParseIntPipe) userToFollowId: number,
+  ) {
+    return await this.usersService.unfollowUser(id, userToFollowId);
+  }
 }

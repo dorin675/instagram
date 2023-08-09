@@ -71,7 +71,7 @@ export class PostsService {
     //   user.posts.splice(index, 1);
     // }
     // await this.userRepo.save(user);
-    await this.postRepo.delete(post);
+    await this.postRepo.delete(post.id);
     return post;
   }
 
@@ -132,5 +132,20 @@ export class PostsService {
     await this.postRepo.save(post);
     await this.userRepo.save(user);
     return post.usersThatLikedPost.length;
+  }
+  async feed(userId: number): Promise<Post[]> {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+      relations: ['following', 'following.posts'],
+    });
+    if (!user) {
+      throw new NotFoundException('User Not Found');
+    }
+    console.log(user.following);
+    const posts: Post[] = [];
+    user.following.forEach((x) => {
+      x.posts.forEach((post) => posts.push(post));
+    });
+    return posts;
   }
 }

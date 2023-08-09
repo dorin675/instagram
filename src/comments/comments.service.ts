@@ -29,10 +29,7 @@ export class CommentsService {
       throw new NotFoundException('Post Not Found!');
     }
     const comments = await this.commentRepo.find({
-      relations: ['replies', 'replies.replies'],
-      where: {
-        post,
-      },
+      relations: ['replies', 'replies.replies', 'post'],
     });
     return comments;
   }
@@ -131,7 +128,7 @@ export class CommentsService {
       throw new NotFoundException('Comment Not Found!');
     }
     if (comment.post.id === post.id) {
-      await this.commentRepo.delete(comment);
+      await this.commentRepo.delete(comment.id);
       return comment;
     }
     throw new BadRequestException('This post does not contain this comment');
