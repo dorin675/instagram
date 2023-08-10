@@ -143,9 +143,10 @@ export class PostsService {
     }
     console.log(user.following);
     const posts: Post[] = [];
+    const test = user.following.map(({ posts }) => posts).flat();
     user.following.forEach((x) => {
       x.posts.forEach((post) => posts.push(post));
     });
-    return posts;
+    return test;
   }
 }
