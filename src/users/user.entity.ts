@@ -56,11 +56,12 @@ export class User {
     nullable: true,
     onDelete: 'CASCADE',
   })
-  @JoinTable({
-    name: 'user_follows',
-    joinColumn: { name: 'follower_id', referencedColumnName: 'id' },
-    inverseJoinColumn: { name: 'following_id', referencedColumnName: 'id' },
-  })
+  // {
+  //   name: 'user_follows',
+  //   joinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+  //   inverseJoinColumn: { name: 'following_id', referencedColumnName: 'id' },
+  // }
+  @JoinTable()
   following: User[];
 
   @ManyToMany(() => User, (user) => user.following, {
